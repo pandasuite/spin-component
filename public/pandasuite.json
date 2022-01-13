@@ -3,83 +3,192 @@
   "main": "",
 
   "system": {
-    "localization": false,
+    "autoSave": false,
     "actions": [
       {
         "id": "toMarker",
-        "name": "Change Image",
+        "name": "Change Rotation",
         "locale_name": {
-          "fr_FR": "Change Image"
+          "fr_FR": "Changer Rotation"
         },
         "params": [
-          { "id": "useless", "name": "Useless", "locale_name": {"fr_FR": "Inutile"}, "type": "Boolean" }
+          { "id": "duration", "name": "Duration", "locale_name": {"fr_FR": "Durée"}, "type": "Float" }
         ]
       }
     ],
     "events": [
       {
         "id": "triggerMarker",
-        "name": "Image",
+        "name": "Rotation",
         "locale_name": {
-          "fr_FR": "Image"
+          "fr_FR": "Rotation"
         }
       }
     ],
     "markers": [
       {
         "params": [
-          { "id": "src", "name": "Source", "locale_name": {"fr_FR": "Source"}, "type": "String" }
+          { "id": "absolute", "name": "absolute", "locale_name": {"fr_FR": "Absolue"}, "type": "Boolean" },
+          { "id": "final", "name": "final", "locale_name": {"fr_FR": "Final"}, "type": "Boolean" }
         ]
       }
     ]
   },
 
-  "properties": [
-    {
-      "id": "searchTerm",
-      "name": "Search Term",
-      "locale_name": {
-        "fr_FR": "Terme de recherche"
-      },
-      "type": "String",
-      "value": "panda"
-    }
-  ],
-
   "events": [
     {
-      "id": "imageChanged",
-      "name": "Image Changed",
+      "id": "onDragStart",
+      "name": "On drag start",
       "locale_name": {
-        "fr_FR": "Image Changée"
+        "fr_FR": "Commencer à glisser"
+      }
+    },
+    {
+      "id": "onDragEnd",
+      "name": "On drag end",
+      "locale_name": {
+        "fr_FR": "Arrêt de glisser"
+      }
+    },
+    {
+      "id": "onRotationStart",
+      "name": "On rotation start",
+      "locale_name": {
+        "fr_FR": "Commencer rotation"
+      }
+    },
+    {
+      "id": "onRotationEnd",
+      "name": "On rotation end",
+      "locale_name": {
+        "fr_FR": "Arrêt rotation"
       }
     }
   ],
 
   "actions": [
     {
-      "id": "changeColor",
-      "name": "Change Color",
+      "id": "rotateBy",
+      "name": "Rotate by",
+      "locale_name": {
+        "fr_FR": "Rotation par"
+      },
       "params": [
-        {
-          "id": "backgroundColor",
-          "name": "Background Color",
-          "locale_name": {
-            "fr_FR": "Couleur de fond"
-          },
-          "type": "String",
-          "value": "#FFFFFF"
-        }
+        { "id": "angle", "name": "Angle (Degree)", "locale_name": {"fr_FR": "Angle (Degré)"}, "type": "Float", "value": 0 },
+        { "id": "duration", "name": "Duration", "locale_name": {"fr_FR": "Durée"}, "type": "Float", "value": 0.3 }
       ]
+    }
+  ],
+
+  "properties": [
+    {
+      "id": "throwProps",
+      "name": "Physics",
+      "locale_name": {
+        "fr_FR": "Physique"
+      },
+      "type": "Boolean",
+      "value": true
+    },    {
+      "id": "throwResistance",
+      "name": "Resistance",
+      "locale_name": {
+        "fr_FR": "Résistance"
+      },
+      "type": "Integer",
+      "value": 10000
+    },
+    {
+      "id": "limitRotation",
+      "name": "Limit Rotation",
+      "locale_name": {
+        "fr_FR": "Limiter Rotation"
+      },
+      "type": "Boolean",
+      "value": false,
+      "separator": true
+    },
+    {
+      "id": "minRotation",
+      "name": "Min rotation",
+      "locale_name": {
+        "fr_FR": "Rotation min"
+      },
+      "type": "Float",
+      "value": 0,
+      "hidden": "!properties.limitRotation.value"
+    },
+    {
+      "id": "maxRotation",
+      "name": "Max rotation",
+      "locale_name": {
+        "fr_FR": "Rotation max"
+      },
+      "type": "Float",
+      "value": 360,
+      "hidden": "!properties.limitRotation.value"
+    },
+    {
+      "id": "snap",
+      "name": "Snap rotation",
+      "locale_name": {
+        "fr_FR": "Rotation Snap"
+      },
+      "type": "Dropdown",
+      "value": "false",
+      "items": [
+        {
+          "id": "false",
+          "name": "None",
+          "locale_name": {
+            "fr_FR": "Aucun"
+          }
+        },
+        {
+          "id": "degree",
+          "name": "Degree",
+          "locale_name": {
+            "fr_FR": "Degré"
+          }
+        },
+        {
+          "id": "marker",
+          "name": "Marker",
+          "locale_name": {
+            "fr_FR": "Marqueur"
+          }
+        }
+      ],
+      "separator": true
+    },
+    {
+      "id": "rotationSnap",
+      "name": "Degree",
+      "locale_name": {
+        "fr_FR": "Degré"
+      },
+      "type": "Float",
+      "value": 90,
+      "hidden": "properties.snap.value != 'degree'"
+    },
+    {
+      "id": "progressiveSnap",
+      "name": "Progressive",
+      "locale_name": {
+        "fr_FR": "Progressive"
+      },
+      "type": "Boolean",
+      "value": false,
+      "hidden": "properties.snap.value == 'false'"      
     }
   ],
 
   "synchronization": [
     {
-      "id": "synchroImages",
-      "name": "Synchronize images",
+      "id": "synchroRotation",
+      "name": "Synchronize rotation",
       "locale_name": {
-        "fr_FR": "Synchroniser images"
+        "fr_FR": "Synchroniser rotation"
       }
     }
   ],
@@ -87,8 +196,12 @@
   "resources": [
     {
       "id": "my_image.png",
-      "type": "Image",
-      "localization": false
+      "name": "Rotated image",
+      "locale_name": {
+        "fr_FR": "Image pivotée"
+      },
+      "type": "Image"
     }
   ]
+
 }

@@ -1,8 +1,8 @@
 {
-  "name": "js-boilerplate-component",
+  "name": "spin-component",
   "version": "1.0.1",
   "main": "index.js",
-  "repository": "https://github.com/pandasuite/js-boilerplate-component.git",
+  "repository": "https://github.com/pandasuite/spin-component.git",
   "private": true,
   "scripts": {
     "start": "webpack-dev-server --open",
@@ -27,6 +27,7 @@
     "webpack-dev-server": "^3.11.0"
   },
   "dependencies": {
+    "lodash": "^4.17.21",
     "pandasuite-bridge": "^4.4.0"
   },
   "release-it": {
