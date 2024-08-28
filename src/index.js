@@ -15,7 +15,13 @@ function isRotationBounds() {
   return properties.limitRotation;
 }
 
-function isValueInRange(testValue, currentValue, oldValue, minBorder, maxBorder) {
+function isValueInRange(
+  testValue,
+  currentValue,
+  oldValue,
+  minBorder,
+  maxBorder
+) {
   const minvalue = Math.min(oldValue, currentValue);
   const maxvalue = Math.max(oldValue, currentValue);
 
@@ -23,13 +29,23 @@ function isValueInRange(testValue, currentValue, oldValue, minBorder, maxBorder)
     return testValue === currentValue;
   }
 
-  const isLooping = (Math.abs(oldValue - currentValue) > (maxBorder - minBorder) * 0.85)
-    && oldValue !== -1 && !isRotationBounds();
+  const isLooping =
+    Math.abs(oldValue - currentValue) > (maxBorder - minBorder) * 0.85 &&
+    oldValue !== -1 &&
+    !isRotationBounds();
 
-  return ((isLooping && ((testValue > maxvalue && testValue <= maxBorder)
-      || (testValue >= minBorder && testValue <= minvalue)))
-    || (!isLooping && ((oldValue <= currentValue && (testValue > minvalue && testValue <= maxvalue))
-      || (oldValue > currentValue && (testValue >= minvalue && testValue < maxvalue)))));
+  return (
+    (isLooping &&
+      ((testValue > maxvalue && testValue <= maxBorder) ||
+        (testValue >= minBorder && testValue <= minvalue))) ||
+    (!isLooping &&
+      ((oldValue <= currentValue &&
+        testValue > minvalue &&
+        testValue <= maxvalue) ||
+        (oldValue > currentValue &&
+          testValue >= minvalue &&
+          testValue < maxvalue)))
+  );
 }
 
 function onRotate(angle, fromSynchro, final) {
@@ -37,16 +53,24 @@ function onRotate(angle, fromSynchro, final) {
   if (markers) {
     markers.forEach((marker) => {
       if (
-        (!marker.final || (marker.final && final))
-        && (
-          (
-            marker.absolute
-            && isValueInRange(marker.id % 360, angle % 360, final ? undefined : oldAngle % 360, 0, 360)
-          ) || (
-            !marker.absolute
-            && isValueInRange(marker.id, angle, final ? undefined : oldAngle, 0, 360)
-          )
-        )) {
+        (!marker.final || (marker.final && final)) &&
+        ((marker.absolute &&
+          isValueInRange(
+            marker.id % 360,
+            angle % 360,
+            final ? undefined : oldAngle % 360,
+            0,
+            360
+          )) ||
+          (!marker.absolute &&
+            isValueInRange(
+              marker.id,
+              angle,
+              final ? undefined : oldAngle,
+              0,
+              360
+            )))
+      ) {
         PandaBridge.send('triggerMarker', marker.id);
       }
     });
@@ -57,8 +81,9 @@ function onRotate(angle, fromSynchro, final) {
     let value = 0;
 
     if (isRotationBounds()) {
-      value = ((angle - properties.minRotation) * 100)
-        / (properties.maxRotation - properties.minRotation);
+      value =
+        ((angle - properties.minRotation) * 100) /
+        (properties.maxRotation - properties.minRotation);
     } else {
       value = (Math.abs(angle % 360) * 100) / 360;
     }
@@ -94,7 +119,9 @@ function rotate(angle, duration, fromSynchro) {
 
 function myInit() {
   const rotatedImage = PandaBridge.resolvePath('my_image.png', './knob.png');
-  document.getElementById('container').style.backgroundImage = `url(${rotatedImage})`;
+  document.getElementById(
+    'container'
+  ).style.backgroundImage = `url(${rotatedImage})`;
 
   const draggableProperties = {
     type: 'rotation',
@@ -121,8 +148,9 @@ function myInit() {
     snap(endValue) {
       if (properties.snap === 'degree') {
         if (properties.progressiveSnap) {
-          let newRotation = Math.round(this.rotation / properties.rotationSnap)
-            * properties.rotationSnap;
+          let newRotation =
+            Math.round(this.rotation / properties.rotationSnap) *
+            properties.rotationSnap;
           if (newRotation > endValue && endValue < this.rotation) {
             newRotation -= properties.rotationSnap;
           } else if (newRotation < endValue && endValue > this.rotation) {
@@ -130,33 +158,38 @@ function myInit() {
           }
           return newRotation;
         }
-        return Math.round(endValue / properties.rotationSnap) * properties.rotationSnap;
+        return (
+          Math.round(endValue / properties.rotationSnap) *
+          properties.rotationSnap
+        );
       }
       if (properties.snap === 'marker') {
         const minEndValue = Math.floor(endValue / 360);
         const maxEndValue = Math.ceil(endValue / 360);
 
-        const gaps = sortBy(markers.map((marker) => {
-          const minValue = (marker.id % 360) + (minEndValue * 360);
-          const minDistance = Math.abs(minValue - endValue);
-          const maxValue = (marker.id % 360) + (maxEndValue * 360);
-          const maxDistance = Math.abs(maxValue - endValue);
+        const gaps = sortBy(
+          markers.map((marker) => {
+            const minValue = (marker.id % 360) + minEndValue * 360;
+            const minDistance = Math.abs(minValue - endValue);
+            const maxValue = (marker.id % 360) + maxEndValue * 360;
+            const maxDistance = Math.abs(maxValue - endValue);
 
-          if (minDistance < maxDistance) {
-            return [minDistance, minValue];
-          }
-          return [maxDistance, maxValue];
-        }), 0);
-
-        const gap = find(gaps, (gap) => {
-          if (properties.progressiveSnap) {
-            if ((gap[1] >= endValue && endValue >= this.rotation)
-              || (gap[1] <= endValue && endValue <= this.rotation)) {
-              return true;
+            if (minDistance < maxDistance) {
+              return [minDistance, minValue];
             }
-          } else {
-            return true;
+            return [maxDistance, maxValue];
+          }),
+          0
+        );
+
+        const gap = find(gaps, (g) => {
+          if (properties.progressiveSnap) {
+            return (
+              (g[1] >= endValue && endValue >= this.rotation) ||
+              (g[1] <= endValue && endValue <= this.rotation)
+            );
           }
+          return true;
         });
 
         if (gap) {
@@ -202,7 +235,9 @@ PandaBridge.init(() => {
 
   /* Markers */
 
-  PandaBridge.getSnapshotData(() => ({ id: Draggable.get('#container').rotation }));
+  PandaBridge.getSnapshotData(() => ({
+    id: Draggable.get('#container').rotation,
+  }));
 
   PandaBridge.setSnapshotData((pandaData) => {
     rotate(pandaData.data.id, pandaData.params.duration || 0);
@@ -216,15 +251,22 @@ PandaBridge.init(() => {
     Draggable.get('#container').update();
 
     let refRotation = Draggable.get('#container').rotation;
-    if (tween
-      && tween.isActive()
-      && tween.vars && tween.vars.css && tween.vars.css.rotation !== undefined) {
+    if (
+      tween &&
+      tween.isActive() &&
+      tween.vars &&
+      tween.vars.css &&
+      tween.vars.css.rotation !== undefined
+    ) {
       refRotation = tween.vars.css.rotation;
     }
 
     let newAngle = refRotation + props.angle;
     if (isRotationBounds()) {
-      newAngle = Math.min(Math.max(properties.minRotation, newAngle), properties.maxRotation);
+      newAngle = Math.min(
+        Math.max(properties.minRotation, newAngle),
+        properties.maxRotation
+      );
     }
     rotate(newAngle, props.duration);
   });
@@ -233,8 +275,9 @@ PandaBridge.init(() => {
     let angle;
 
     if (isRotationBounds()) {
-      angle = properties.minRotation
-        + ((percent * (properties.maxRotation - properties.minRotation)) / 100);
+      angle =
+        properties.minRotation +
+        (percent * (properties.maxRotation - properties.minRotation)) / 100;
     } else {
       angle = (percent * 360) / 100;
     }

@@ -12,7 +12,12 @@
           "fr_FR": "Changer Rotation"
         },
         "params": [
-          { "id": "duration", "name": "Duration", "locale_name": {"fr_FR": "Durée"}, "type": "Float" }
+          {
+            "id": "duration",
+            "name": "Duration",
+            "locale_name": { "fr_FR": "Durée" },
+            "type": "Float"
+          }
         ]
       }
     ],
@@ -28,8 +33,18 @@
     "markers": [
       {
         "params": [
-          { "id": "absolute", "name": "absolute", "locale_name": {"fr_FR": "Absolue"}, "type": "Boolean" },
-          { "id": "final", "name": "final", "locale_name": {"fr_FR": "Final"}, "type": "Boolean" }
+          {
+            "id": "absolute",
+            "name": "absolute",
+            "locale_name": { "fr_FR": "Absolue" },
+            "type": "Boolean"
+          },
+          {
+            "id": "final",
+            "name": "final",
+            "locale_name": { "fr_FR": "Final" },
+            "type": "Boolean"
+          }
         ]
       }
     ]
@@ -74,8 +89,20 @@
         "fr_FR": "Rotation par"
       },
       "params": [
-        { "id": "angle", "name": "Angle (Degree)", "locale_name": {"fr_FR": "Angle (Degré)"}, "type": "Float", "value": 0 },
-        { "id": "duration", "name": "Duration", "locale_name": {"fr_FR": "Durée"}, "type": "Float", "value": 0.3 }
+        {
+          "id": "angle",
+          "name": "Angle (Degree)",
+          "locale_name": { "fr_FR": "Angle (Degré)" },
+          "type": "Float",
+          "value": 0
+        },
+        {
+          "id": "duration",
+          "name": "Duration",
+          "locale_name": { "fr_FR": "Durée" },
+          "type": "Float",
+          "value": 0.3
+        }
       ]
     }
   ],
@@ -89,7 +116,8 @@
       },
       "type": "Boolean",
       "value": true
-    },    {
+    },
+    {
       "id": "throwResistance",
       "name": "Resistance",
       "locale_name": {
@@ -179,7 +207,7 @@
       },
       "type": "Boolean",
       "value": false,
-      "hidden": "properties.snap.value == 'false'"      
+      "hidden": "properties.snap.value == 'false'"
     }
   ],
 
@@ -203,5 +231,4 @@
       "type": "Image"
     }
   ]
-
 }
