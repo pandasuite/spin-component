@@ -11,6 +11,10 @@ let markers = null;
 let oldAngle = 0;
 let tween;
 
+function mod(n, m) {
+  return ((n % m) + m) % m;
+}
+
 function isRotationBounds() {
   return properties.limitRotation;
 }
@@ -26,7 +30,7 @@ function isValueInRange(
   const maxvalue = Math.max(oldValue, currentValue);
 
   if (oldValue === undefined) {
-    return testValue === currentValue;
+    return Math.abs(testValue - currentValue) < 0.001;
   }
 
   const isLooping =
@@ -56,9 +60,9 @@ function onRotate(angle, fromSynchro, final) {
         (!marker.final || (marker.final && final)) &&
         ((marker.absolute &&
           isValueInRange(
-            marker.angle % 360,
-            angle % 360,
-            final ? undefined : oldAngle % 360,
+            mod(marker.angle, 360),
+            mod(angle, 360),
+            final ? undefined : mod(oldAngle, 360),
             0,
             360
           )) ||
@@ -71,7 +75,7 @@ function onRotate(angle, fromSynchro, final) {
               360
             )))
       ) {
-        PandaBridge.send('triggerMarker', marker.angle);
+        PandaBridge.send('triggerMarker', marker.id);
       }
     });
   }
@@ -85,7 +89,7 @@ function onRotate(angle, fromSynchro, final) {
         ((angle - properties.minRotation) * 100) /
         (properties.maxRotation - properties.minRotation);
     } else {
-      value = (Math.abs(angle % 360) * 100) / 360;
+      value = mod(value, 360) / 360;
     }
     PandaBridge.send('synchronize', [value, 'synchroRotation', true]);
   }
