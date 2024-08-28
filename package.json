@@ -1,6 +1,6 @@
 {
   "name": "spin-component",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "main": "index.js",
   "repository": "https://github.com/pandasuite/spin-component.git",
   "private": true,
