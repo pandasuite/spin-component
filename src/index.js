@@ -56,7 +56,7 @@ function onRotate(angle, fromSynchro, final) {
         (!marker.final || (marker.final && final)) &&
         ((marker.absolute &&
           isValueInRange(
-            marker.id % 360,
+            marker.angle % 360,
             angle % 360,
             final ? undefined : oldAngle % 360,
             0,
@@ -64,14 +64,14 @@ function onRotate(angle, fromSynchro, final) {
           )) ||
           (!marker.absolute &&
             isValueInRange(
-              marker.id,
+              marker.angle,
               angle,
               final ? undefined : oldAngle,
               0,
               360
             )))
       ) {
-        PandaBridge.send('triggerMarker', marker.id);
+        PandaBridge.send('triggerMarker', marker.angle);
       }
     });
   }
@@ -94,6 +94,7 @@ function onRotate(angle, fromSynchro, final) {
 }
 
 function rotate(angle, duration, fromSynchro) {
+  const overideRotateZeroBug = angle === 0 && duration === 0;
   let needToDispatchStart = true;
 
   Draggable.get('#container').update();
@@ -169,9 +170,9 @@ function myInit() {
 
         const gaps = sortBy(
           markers.map((marker) => {
-            const minValue = (marker.id % 360) + minEndValue * 360;
+            const minValue = (marker.angle % 360) + minEndValue * 360;
             const minDistance = Math.abs(minValue - endValue);
-            const maxValue = (marker.id % 360) + maxEndValue * 360;
+            const maxValue = (marker.angle % 360) + maxEndValue * 360;
             const maxDistance = Math.abs(maxValue - endValue);
 
             if (minDistance < maxDistance) {
@@ -236,11 +237,11 @@ PandaBridge.init(() => {
   /* Markers */
 
   PandaBridge.getSnapshotData(() => ({
-    id: Draggable.get('#container').rotation,
+    angle: Draggable.get('#container').rotation,
   }));
 
-  PandaBridge.setSnapshotData((pandaData) => {
-    rotate(pandaData.data.id, pandaData.params.duration || 0);
+  PandaBridge.setSnapshotData(({ data, params }) => {
+    rotate(data.angle, params.duration || 0);
   });
 
   /* Actions */
