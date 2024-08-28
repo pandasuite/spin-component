@@ -101,19 +101,25 @@ function rotate(angle, duration, fromSynchro) {
   if (tween && tween.isActive()) {
     needToDispatchStart = false;
   }
+
   tween = TweenLite.to('#container', duration, {
-    rotation: angle,
+    rotation: overideRotateZeroBug ? 0.00001 : angle,
     onStart() {
       if (needToDispatchStart) {
         PandaBridge.send('onRotationStart');
       }
     },
     onComplete() {
+      if (!overideRotateZeroBug) {
+        onRotate(0, fromSynchro);
+      }
       PandaBridge.send('onRotationEnd');
     },
     onUpdate() {
-      // eslint-disable-next-line no-underscore-dangle
-      onRotate(this.target[0]._gsTransform.rotation, fromSynchro);
+      if (!overideRotateZeroBug) {
+        // eslint-disable-next-line no-underscore-dangle
+        onRotate(this.target[0]._gsTransform.rotation, fromSynchro);
+      }
     },
   });
 }
