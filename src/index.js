@@ -10,6 +10,7 @@ let markers = null;
 
 let oldAngle = 0;
 let tween;
+let currentRotation = 0;
 
 function mod(n, m) {
   return ((n % m) + m) % m;
@@ -287,11 +288,24 @@ PandaBridge.init(() => {
 
     if (isRotationBounds()) {
       angle =
+  PandaBridge.synchronize('synchroRotation', (percent) => {
+    let targetAngle;
+    if (isRotationBounds()) {
+      targetAngle =
         properties.minRotation +
         (percent * (properties.maxRotation - properties.minRotation)) / 100;
     } else {
-      angle = (percent * 360) / 100;
+      targetAngle = (percent * 360) / 100;
     }
-    rotate(angle, 0.1, true);
+
+    let diff = targetAngle - (currentRotation % 360);
+
+    if (diff < 0) diff += 360;
+
+    currentRotation += diff;
+
+    TweenLite.to('#container', 0.1, {
+      rotation: currentRotation,
+    });
   });
 });
