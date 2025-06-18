@@ -17,6 +17,20 @@ function mod(n, m) {
   return ((n % m) + m) % m;
 }
 
+function getReferenceRotation(isActive) {
+  let refRotation = Draggable.get('#container').rotation;
+  if (
+    tween &&
+    isActive &&
+    tween.vars &&
+    tween.vars.css &&
+    tween.vars.css.rotation !== undefined
+  ) {
+    refRotation = tween.vars.css.rotation;
+  }
+  return refRotation;
+}
+
 function isRotationBounds() {
   return properties.limitRotation;
 }
@@ -155,7 +169,7 @@ function onRotate(angle, fromSynchro, final) {
   oldAngle = angle;
 }
 
-function rotate(angle, duration, fromSynchro) {
+function rotate(angle, duration, fromSynchro, sendEvents = true) {
   const overideRotateZeroBug = angle === 0 && duration === 0;
   let needToDispatchStart = true;
 
@@ -167,7 +181,7 @@ function rotate(angle, duration, fromSynchro) {
   tween = TweenLite.to('#container', duration, {
     rotation: overideRotateZeroBug ? 0.00001 : angle,
     onStart() {
-      if (needToDispatchStart) {
+      if (needToDispatchStart && sendEvents) {
         PandaBridge.send('onRotationStart');
       }
     },
@@ -175,11 +189,12 @@ function rotate(angle, duration, fromSynchro) {
       if (!overideRotateZeroBug) {
         onRotate(0, fromSynchro);
       }
-      PandaBridge.send('onRotationEnd');
+      if (sendEvents) {
+        PandaBridge.send('onRotationEnd');
+      }
     },
     onUpdate() {
       if (!overideRotateZeroBug) {
-        // eslint-disable-next-line no-underscore-dangle
         onRotate(this.target[0]._gsTransform.rotation, fromSynchro);
       }
     },
@@ -273,7 +288,9 @@ PandaBridge.init(() => {
   }));
 
   PandaBridge.setSnapshotData(({ data, params }) => {
-    rotate(data.angle, params.duration || 0);
+    const refRotation = getReferenceRotation(true);
+    const sendEvents = Boolean(tween && data.angle !== refRotation);
+    rotate(data.angle, params.duration || 0, false, sendEvents);
   });
 
   /* Actions */
@@ -288,16 +305,7 @@ PandaBridge.init(() => {
 
     Draggable.get('#container').update();
 
-    let refRotation = Draggable.get('#container').rotation;
-    if (
-      tween &&
-      tween.isActive() &&
-      tween.vars &&
-      tween.vars.css &&
-      tween.vars.css.rotation !== undefined
-    ) {
-      refRotation = tween.vars.css.rotation;
-    }
+    const refRotation = getReferenceRotation(tween && tween.isActive());
 
     let newAngle = refRotation + props.angle;
     if (isRotationBounds()) {
@@ -321,16 +329,7 @@ PandaBridge.init(() => {
 
     Draggable.get('#container').update();
 
-    let startRotation = Draggable.get('#container').rotation;
-    if (
-      tween &&
-      tween.isActive() &&
-      tween.vars &&
-      tween.vars.css &&
-      tween.vars.css.rotation !== undefined
-    ) {
-      startRotation = tween.vars.css.rotation;
-    }
+    const startRotation = getReferenceRotation(tween && tween.isActive());
 
     if (tween && tween.isActive()) {
       tween.kill();
