@@ -124,6 +124,31 @@
           "value": 0.3
         }
       ]
+    },
+    {
+      "id": "spinWheel",
+      "name": "Spin Wheel",
+      "locale_name": {
+        "fr_FR": "Lancer la Roue"
+      },
+      "params": [
+        {
+          "id": "velocity",
+          "name": "Velocity",
+          "locale_name": { "fr_FR": "Vitesse" },
+          "type": "Integer",
+          "value": 500,
+          "bindable": true
+        },
+        {
+          "id": "forward",
+          "name": "Forward",
+          "locale_name": { "fr_FR": "Avant" },
+          "type": "Boolean",
+          "value": true,
+          "bindable": true
+        }
+      ]
     }
   ],
 

@@ -20,6 +20,62 @@ function isRotationBounds() {
   return properties.limitRotation;
 }
 
+function applySnapLogic(endValue, fromRotation) {
+  if (properties.snap === 'degree') {
+    if (properties.progressiveSnap) {
+      let newRotation =
+        Math.round(fromRotation / properties.rotationSnap) *
+        properties.rotationSnap;
+      if (newRotation > endValue && endValue < fromRotation) {
+        newRotation -= properties.rotationSnap;
+      } else if (newRotation < endValue && endValue > fromRotation) {
+        newRotation += properties.rotationSnap;
+      }
+      return newRotation;
+    }
+    return (
+      Math.round(endValue / properties.rotationSnap) * properties.rotationSnap
+    );
+  }
+  if (properties.snap === 'marker' && markers) {
+    const minEndValue = Math.floor(endValue / 360);
+    const maxEndValue = Math.ceil(endValue / 360);
+
+    const gaps = sortBy(
+      markers.map((marker) => {
+        const minValue = (marker.angle % 360) + minEndValue * 360;
+        const minDistance = Math.abs(minValue - endValue);
+        const maxValue = (marker.angle % 360) + maxEndValue * 360;
+        const maxDistance = Math.abs(maxValue - endValue);
+
+        if (minDistance < maxDistance) {
+          return [minDistance, minValue];
+        }
+        return [maxDistance, maxValue];
+      }),
+      0
+    );
+
+    const gap = find(gaps, (g) => {
+      if (properties.progressiveSnap) {
+        return (
+          (g[1] >= endValue && endValue >= fromRotation) ||
+          (g[1] <= endValue && endValue <= fromRotation)
+        );
+      }
+      return true;
+    });
+
+    if (gap) {
+      const [, angle] = gap;
+      return angle;
+    }
+    const [, angle] = gaps[gaps.length - 1];
+    return angle - 360;
+  }
+  return endValue;
+}
+
 function isValueInRange(
   testValue,
   currentValue,
@@ -158,58 +214,7 @@ function myInit() {
       onRotate(this.rotation);
     },
     snap(endValue) {
-      if (properties.snap === 'degree') {
-        if (properties.progressiveSnap) {
-          let newRotation =
-            Math.round(this.rotation / properties.rotationSnap) *
-            properties.rotationSnap;
-          if (newRotation > endValue && endValue < this.rotation) {
-            newRotation -= properties.rotationSnap;
-          } else if (newRotation < endValue && endValue > this.rotation) {
-            newRotation += properties.rotationSnap;
-          }
-          return newRotation;
-        }
-        return (
-          Math.round(endValue / properties.rotationSnap) *
-          properties.rotationSnap
-        );
-      }
-      if (properties.snap === 'marker') {
-        const minEndValue = Math.floor(endValue / 360);
-        const maxEndValue = Math.ceil(endValue / 360);
-
-        const gaps = sortBy(
-          markers.map((marker) => {
-            const minValue = (marker.angle % 360) + minEndValue * 360;
-            const minDistance = Math.abs(minValue - endValue);
-            const maxValue = (marker.angle % 360) + maxEndValue * 360;
-            const maxDistance = Math.abs(maxValue - endValue);
-
-            if (minDistance < maxDistance) {
-              return [minDistance, minValue];
-            }
-            return [maxDistance, maxValue];
-          }),
-          0
-        );
-
-        const gap = find(gaps, (g) => {
-          if (properties.progressiveSnap) {
-            return (
-              (g[1] >= endValue && endValue >= this.rotation) ||
-              (g[1] <= endValue && endValue <= this.rotation)
-            );
-          }
-          return true;
-        });
-
-        if (gap) {
-          return gap[1];
-        }
-        return gaps[gaps.length - 1][1] - 360;
-      }
-      return endValue;
+      return applySnapLogic(endValue, this.rotation);
     },
   };
 
@@ -283,11 +288,73 @@ PandaBridge.init(() => {
     rotate(newAngle, props.duration);
   });
 
-  PandaBridge.synchronize('synchroRotation', (percent) => {
-    let angle;
+  PandaBridge.listen('spinWheel', (args) => {
+    const props = args[0] || {};
+    const velocity = typeof props.velocity === 'number' ? props.velocity : 500;
+    const forward = props.forward !== undefined ? props.forward : true;
 
+    Draggable.get('#container').update();
+
+    let startRotation = Draggable.get('#container').rotation;
+    if (
+      tween &&
+      tween.isActive() &&
+      tween.vars &&
+      tween.vars.css &&
+      tween.vars.css.rotation !== undefined
+    ) {
+      startRotation = tween.vars.css.rotation;
+    }
+
+    if (tween && tween.isActive()) {
+      tween.kill();
+    }
+
+    const baseLoops = 2;
+    const extraLoops = Math.max(0, Math.floor(velocity / 400));
+    const randomLoops = Math.random() < 0.3 ? 1 : 0; // 30% chance of adding 1 random loop
+    const totalLoops = baseLoops + extraLoops + randomLoops;
+
+    const partialRotation = Math.floor(Math.random() * 360);
+
+    let deltaAngle = totalLoops * 360 + partialRotation;
+    if (!forward) deltaAngle = -deltaAngle;
+
+    let targetAngle = startRotation + deltaAngle;
     if (isRotationBounds()) {
-      angle =
+      targetAngle = Math.min(
+        Math.max(properties.minRotation, targetAngle),
+        properties.maxRotation
+      );
+    }
+
+    targetAngle = applySnapLogic(targetAngle, startRotation);
+
+    const durationPerLoop = 0.8;
+    let duration = Math.abs(totalLoops) * durationPerLoop;
+
+    const defaultResistance = 10000;
+    const resistanceFactor =
+      defaultResistance / (properties.throwResistance || defaultResistance);
+    duration *= resistanceFactor;
+    duration = Math.min(6, Math.max(1.5, duration));
+
+    tween = TweenLite.to('#container', duration, {
+      rotation: targetAngle,
+      ease: Power4.easeOut,
+      onStart() {
+        PandaBridge.send('onRotationStart');
+      },
+      onUpdate() {
+        onRotate(this.target[0]._gsTransform.rotation, false);
+      },
+      onComplete() {
+        onRotate(this.target[0]._gsTransform.rotation, false, true);
+        PandaBridge.send('onRotationEnd');
+      },
+    });
+  });
+
   PandaBridge.synchronize('synchroRotation', (percent) => {
     let targetAngle;
     if (isRotationBounds()) {
