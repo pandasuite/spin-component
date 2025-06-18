@@ -11,6 +11,7 @@ let markers = null;
 let oldAngle = 0;
 let tween;
 let currentRotation = 0;
+let infiniteTween = null;
 
 function mod(n, m) {
   return ((n % m) + m) % m;
@@ -230,6 +231,21 @@ function myInit() {
   Draggable.create('#container', draggableProperties);
 }
 
+function launchInfiniteRotation(tourDuration) {
+  if (infiniteTween) infiniteTween.kill();
+
+  infiniteTween = TweenLite.to('#container', tourDuration, {
+    rotation: '+=360',
+    ease: Linear.easeNone,
+    onUpdate() {
+      onRotate(this.target[0]._gsTransform.rotation, false);
+    },
+    onComplete() {
+      launchInfiniteRotation(tourDuration);
+    },
+  });
+}
+
 PandaBridge.init(() => {
   PandaBridge.onLoad((pandaData) => {
     properties = pandaData.properties;
@@ -263,6 +279,11 @@ PandaBridge.init(() => {
   /* Actions */
 
   PandaBridge.listen('rotateBy', (args) => {
+    if (infiniteTween) {
+      infiniteTween.kill();
+      infiniteTween = null;
+    }
+
     const props = args[0] || {};
 
     Draggable.get('#container').update();
@@ -289,6 +310,11 @@ PandaBridge.init(() => {
   });
 
   PandaBridge.listen('spinWheel', (args) => {
+    if (infiniteTween) {
+      infiniteTween.kill();
+      infiniteTween = null;
+    }
+
     const props = args[0] || {};
     const velocity = typeof props.velocity === 'number' ? props.velocity : 500;
     const forward = props.forward !== undefined ? props.forward : true;
@@ -374,5 +400,25 @@ PandaBridge.init(() => {
     TweenLite.to('#container', 0.1, {
       rotation: currentRotation,
     });
+  });
+
+  PandaBridge.listen('startInfiniteRotation', (args) => {
+    const props = args[0] || {};
+    const tourDuration =
+      typeof props.duration === 'number' && props.duration > 0
+        ? props.duration
+        : 2;
+
+    if (tween && tween.isActive()) tween.kill();
+    if (infiniteTween) infiniteTween.kill();
+
+    launchInfiniteRotation(tourDuration);
+  });
+
+  PandaBridge.listen('stopInfiniteRotation', () => {
+    if (infiniteTween) {
+      infiniteTween.kill();
+      infiniteTween = null;
+    }
   });
 });

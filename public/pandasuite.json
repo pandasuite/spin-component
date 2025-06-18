@@ -149,6 +149,25 @@
           "bindable": true
         }
       ]
+    },
+    {
+      "id": "startInfiniteRotation",
+      "name": "Start infinite rotation",
+      "locale_name": { "fr_FR": "Rotation infinie" },
+      "params": [
+        {
+          "id": "duration",
+          "name": "Speed (s)",
+          "locale_name": { "fr_FR": "Vitesse (s)" },
+          "type": "Float",
+          "value": 2
+        }
+      ]
+    },
+    {
+      "id": "stopInfiniteRotation",
+      "name": "Stop infinite rotation",
+      "locale_name": { "fr_FR": "Arrêter rotation infinie" }
     }
   ],
 
