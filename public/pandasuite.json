@@ -1,7 +1,14 @@
 {
+  "meta": {
+    "stype": "spin",
+    "componentURL": "https://github.com/pandasuite/spin-component/",
+    "description": "Rotatable image component for wheel-of-fortune, product 360° views, or any touch/mouse-driven rotation. Supports snap, momentum, and infinite rotation.",
+    "locale_description": {
+      "fr_FR": "Composant d'image rotative pour roue de la fortune, vues produit à 360° ou toute rotation pilotée par le toucher/la souris. Supporte l'accrochage, l'élan et la rotation infinie."
+    }
+  },
   "version": "2.0.0",
   "main": "",
-
   "system": {
     "autoSave": false,
     "actions": [
@@ -15,10 +22,16 @@
           {
             "id": "duration",
             "name": "Duration",
-            "locale_name": { "fr_FR": "Durée" },
+            "locale_name": {
+              "fr_FR": "Durée"
+            },
             "type": "Float"
           }
-        ]
+        ],
+        "description": "Rotate to a specific angle marker.",
+        "locale_description": {
+          "fr_FR": "Tourner vers un marqueur d'angle spécifique."
+        }
       }
     ],
     "events": [
@@ -27,6 +40,10 @@
         "name": "Rotation",
         "locale_name": {
           "fr_FR": "Rotation"
+        },
+        "description": "Fires when the rotation reaches a marker angle.",
+        "locale_description": {
+          "fr_FR": "Se déclenche quand la rotation atteint un angle de marqueur."
         }
       }
     ],
@@ -37,20 +54,38 @@
           {
             "id": "angle",
             "name": "Angle",
-            "locale_name": { "fr_FR": "Angle" },
-            "type": "Float"
+            "locale_name": {
+              "fr_FR": "Angle"
+            },
+            "type": "Float",
+            "description": "Target rotation angle in degrees for this marker.",
+            "locale_description": {
+              "fr_FR": "Angle de rotation cible en degrés pour ce marqueur."
+            }
           },
           {
             "id": "absolute",
             "name": "absolute",
-            "locale_name": { "fr_FR": "Absolue" },
-            "type": "Boolean"
+            "locale_name": {
+              "fr_FR": "Absolue"
+            },
+            "type": "Boolean",
+            "description": "Whether the angle is absolute or relative to the initial position.",
+            "locale_description": {
+              "fr_FR": "Si l'angle est absolu ou relatif à la position initiale."
+            }
           },
           {
             "id": "final",
             "name": "final",
-            "locale_name": { "fr_FR": "Final" },
-            "type": "Boolean"
+            "locale_name": {
+              "fr_FR": "Final"
+            },
+            "type": "Boolean",
+            "description": "Whether this is a final position (stops rotation).",
+            "locale_description": {
+              "fr_FR": "Si c'est une position finale (arrête la rotation)."
+            }
           }
         ]
       }
@@ -69,13 +104,16 @@
       }
     }
   },
-
   "events": [
     {
       "id": "onDragStart",
       "name": "On drag start",
       "locale_name": {
         "fr_FR": "Commencer à glisser"
+      },
+      "description": "Fires when the user starts dragging to spin.",
+      "locale_description": {
+        "fr_FR": "Se déclenche quand l'utilisateur commence à glisser pour tourner."
       }
     },
     {
@@ -83,6 +121,10 @@
       "name": "On drag end",
       "locale_name": {
         "fr_FR": "Arrêt de glisser"
+      },
+      "description": "Fires when the user releases the spin gesture.",
+      "locale_description": {
+        "fr_FR": "Se déclenche quand l'utilisateur relâche le geste de rotation."
       }
     },
     {
@@ -90,6 +132,10 @@
       "name": "On rotation start",
       "locale_name": {
         "fr_FR": "Commencer rotation"
+      },
+      "description": "Fires when a rotation animation begins.",
+      "locale_description": {
+        "fr_FR": "Se déclenche quand une animation de rotation commence."
       }
     },
     {
@@ -97,10 +143,13 @@
       "name": "On rotation end",
       "locale_name": {
         "fr_FR": "Arrêt rotation"
+      },
+      "description": "Fires when a rotation animation ends (including throw deceleration).",
+      "locale_description": {
+        "fr_FR": "Se déclenche quand une animation de rotation se termine (y compris la décélération du lancer)."
       }
     }
   ],
-
   "actions": [
     {
       "id": "rotateBy",
@@ -112,18 +161,34 @@
         {
           "id": "angle",
           "name": "Angle (Degree)",
-          "locale_name": { "fr_FR": "Angle (Degré)" },
+          "locale_name": {
+            "fr_FR": "Angle (Degré)"
+          },
           "type": "Float",
-          "value": 0
+          "value": 0,
+          "description": "Rotation angle in degrees.",
+          "locale_description": {
+            "fr_FR": "Angle de rotation en degrés."
+          }
         },
         {
           "id": "duration",
           "name": "Duration",
-          "locale_name": { "fr_FR": "Durée" },
+          "locale_name": {
+            "fr_FR": "Durée"
+          },
           "type": "Float",
-          "value": 0.3
+          "value": 0.3,
+          "description": "Animation duration in seconds.",
+          "locale_description": {
+            "fr_FR": "Durée de l'animation en secondes."
+          }
         }
-      ]
+      ],
+      "description": "Rotate the image by a given angle over a duration.",
+      "locale_description": {
+        "fr_FR": "Faire tourner l'image d'un angle donné sur une durée."
+      }
     },
     {
       "id": "spinWheel",
@@ -135,42 +200,75 @@
         {
           "id": "velocity",
           "name": "Velocity",
-          "locale_name": { "fr_FR": "Vitesse" },
+          "locale_name": {
+            "fr_FR": "Vitesse"
+          },
           "type": "Integer",
           "value": 500,
-          "bindable": true
+          "bindable": true,
+          "description": "Initial spin velocity.",
+          "locale_description": {
+            "fr_FR": "Vélocité initiale de rotation."
+          }
         },
         {
           "id": "forward",
           "name": "Forward",
-          "locale_name": { "fr_FR": "Avant" },
+          "locale_name": {
+            "fr_FR": "Avant"
+          },
           "type": "Boolean",
           "value": true,
-          "bindable": true
+          "bindable": true,
+          "description": "Spin direction: forward (true) or backward (false).",
+          "locale_description": {
+            "fr_FR": "Direction de rotation : avant (true) ou arrière (false)."
+          }
         }
-      ]
+      ],
+      "description": "Spin the image with a given velocity like a wheel.",
+      "locale_description": {
+        "fr_FR": "Faire tourner l'image avec une vélocité donnée comme une roue."
+      }
     },
     {
       "id": "startInfiniteRotation",
       "name": "Start infinite rotation",
-      "locale_name": { "fr_FR": "Rotation infinie" },
+      "locale_name": {
+        "fr_FR": "Rotation infinie"
+      },
       "params": [
         {
           "id": "duration",
           "name": "Speed (s)",
-          "locale_name": { "fr_FR": "Vitesse (s)" },
+          "locale_name": {
+            "fr_FR": "Vitesse (s)"
+          },
           "type": "Float",
-          "value": 2
+          "value": 2,
+          "description": "Duration in seconds for one full rotation.",
+          "locale_description": {
+            "fr_FR": "Durée en secondes pour un tour complet."
+          }
         }
-      ]
+      ],
+      "description": "Start continuous infinite rotation.",
+      "locale_description": {
+        "fr_FR": "Démarrer une rotation infinie continue."
+      }
     },
     {
       "id": "stopInfiniteRotation",
       "name": "Stop infinite rotation",
-      "locale_name": { "fr_FR": "Arrêter rotation infinie" }
+      "locale_name": {
+        "fr_FR": "Arrêter rotation infinie"
+      },
+      "description": "Stop infinite rotation.",
+      "locale_description": {
+        "fr_FR": "Arrêter la rotation infinie."
+      }
     }
   ],
-
   "properties": [
     {
       "id": "throwProps",
@@ -179,7 +277,11 @@
         "fr_FR": "Physique"
       },
       "type": "Boolean",
-      "value": true
+      "value": true,
+      "description": "Enable momentum-based throwing after releasing the spin gesture.",
+      "locale_description": {
+        "fr_FR": "Activer le lancer basé sur l'élan après avoir relâché le geste de rotation."
+      }
     },
     {
       "id": "throwResistance",
@@ -188,7 +290,11 @@
         "fr_FR": "Résistance"
       },
       "type": "Integer",
-      "value": 10000
+      "value": 10000,
+      "description": "Resistance applied to the throw momentum (higher = stops faster).",
+      "locale_description": {
+        "fr_FR": "Résistance appliquée à l'élan du lancer (plus élevé = s'arrête plus vite)."
+      }
     },
     {
       "id": "limitRotation",
@@ -198,7 +304,11 @@
       },
       "type": "Boolean",
       "value": false,
-      "separator": true
+      "separator": true,
+      "description": "Limit the rotation to a range of angles.",
+      "locale_description": {
+        "fr_FR": "Limiter la rotation à une plage d'angles."
+      }
     },
     {
       "id": "minRotation",
@@ -208,7 +318,11 @@
       },
       "type": "Float",
       "value": 0,
-      "hidden": "!properties.limitRotation.value"
+      "hidden": "!properties.limitRotation.value",
+      "description": "Minimum rotation angle in degrees. Active when rotation limit is enabled.",
+      "locale_description": {
+        "fr_FR": "Angle de rotation minimum en degrés. Actif quand la limite de rotation est activée."
+      }
     },
     {
       "id": "maxRotation",
@@ -218,7 +332,11 @@
       },
       "type": "Float",
       "value": 360,
-      "hidden": "!properties.limitRotation.value"
+      "hidden": "!properties.limitRotation.value",
+      "description": "Maximum rotation angle in degrees. Active when rotation limit is enabled.",
+      "locale_description": {
+        "fr_FR": "Angle de rotation maximum en degrés. Actif quand la limite de rotation est activée."
+      }
     },
     {
       "id": "snap",
@@ -251,7 +369,11 @@
           }
         }
       ],
-      "separator": true
+      "separator": true,
+      "description": "Snap behavior: none, snap to degree intervals, or snap to markers.",
+      "locale_description": {
+        "fr_FR": "Comportement d'accrochage : aucun, accrochage aux intervalles de degrés ou accrochage aux marqueurs."
+      }
     },
     {
       "id": "rotationSnap",
@@ -261,7 +383,11 @@
       },
       "type": "Float",
       "value": 90,
-      "hidden": "properties.snap.value != 'degree'"
+      "hidden": "properties.snap.value != 'degree'",
+      "description": "Degree interval for snap behavior. Active when snap is set to degree.",
+      "locale_description": {
+        "fr_FR": "Intervalle en degrés pour l'accrochage. Actif quand l'accrochage est sur degré."
+      }
     },
     {
       "id": "progressiveSnap",
@@ -271,20 +397,26 @@
       },
       "type": "Boolean",
       "value": false,
-      "hidden": "properties.snap.value == 'false'"
+      "hidden": "properties.snap.value == 'false'",
+      "description": "Animate progressively to snap position instead of jumping. Active when snap is enabled.",
+      "locale_description": {
+        "fr_FR": "Animer progressivement vers la position d'accrochage au lieu de sauter. Actif quand l'accrochage est activé."
+      }
     }
   ],
-
   "synchronization": [
     {
       "id": "synchroRotation",
       "name": "Synchronize rotation",
       "locale_name": {
         "fr_FR": "Synchroniser rotation"
+      },
+      "description": "Synchronize rotation angle with another component.",
+      "locale_description": {
+        "fr_FR": "Synchroniser l'angle de rotation avec un autre composant."
       }
     }
   ],
-
   "resources": [
     {
       "id": "my_image.png",
@@ -292,7 +424,11 @@
       "locale_name": {
         "fr_FR": "Image pivotée"
       },
-      "type": "Image"
+      "type": "Image",
+      "description": "Image to display as the spinning element.",
+      "locale_description": {
+        "fr_FR": "Image à afficher comme élément tournant."
+      }
     }
   ]
 }
