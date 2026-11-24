@@ -161,7 +161,7 @@ function onRotate(angle, fromSynchro, final) {
         ((angle - properties.minRotation) * 100) /
         (properties.maxRotation - properties.minRotation);
     } else {
-      value = mod(value, 360) / 360;
+      value = (mod(angle, 360) * 100) / 360;
     }
     PandaBridge.send('synchronize', [value, 'synchroRotation', true]);
   }
